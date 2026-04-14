@@ -27,7 +27,7 @@ services:
     # pushes to main (as `:latest` + `:main`). Pinned to a release tag for
     # reproducibility; bump alongside jellystack-app/package.json and
     # umbrel-app.yml `version:`.
-    image: ghcr.io/raccommode/jellystack-panel:2026.16.1
+    image: ghcr.io/raccommode/jellystack-panel:2026.16.2
     restart: on-failure
     stop_grace_period: 30s
     environment:
@@ -253,7 +253,8 @@ services:
       - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/downloads:/downloads
 
   decluttarr:
-    image: ghcr.io/manimatter/decluttarr:v1.61.0
+    # Upstream's version scheme: v1.X.Y. Latest as of this release is v1.50.2.
+    image: ghcr.io/manimatter/decluttarr:v1.50.2
     restart: on-failure
     environment:
       TZ: ${TZ:-UTC}

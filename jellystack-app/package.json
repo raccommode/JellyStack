@@ -1,6 +1,6 @@
 {
   "name": "jellystack-panel",
-  "version": "2026.16.1",
+  "version": "2026.16.2",
   "private": true,
   "description": "JellyStack Panel — unified dashboard and auto-configurator for the JellyStack Umbrel community app store.",
   "license": "MIT",

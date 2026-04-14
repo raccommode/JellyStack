@@ -2,7 +2,7 @@ manifestVersion: 1.1
 id: jellystack-app
 category: media
 name: JellyStack
-version: "2026.16.1"
+version: "2026.16.2"
 tagline: The complete Jellyfin media stack — one install, one dashboard, zero config.
 description: >-
   JellyStack bundles Jellyfin, the *arr suite (Sonarr, Radarr, Lidarr, Readarr, Bazarr,
@@ -48,7 +48,7 @@ description: >-
 
   3. Follow the welcome wizard.
 releaseNotes: >-
-  2026.16.1 — first installable release.
+  2026.16.2 — first installable release.
 
 
   - Monolithic Umbrel app: installing JellyStack brings up the full Jellyfin
@@ -58,7 +58,8 @@ releaseNotes: >-
     per-service iframe viewer, reverse proxy, and 6-step setup wizard that
     wires Prowlarr ↔ *arr ↔ qBittorrent/SABnzbd automatically.
 
-  - Version scheme: year.week.increment. This is 2026, ISO week 16, release 1.
+  - Version scheme: year.week.increment. This is 2026, ISO week 16, release 2.
+    (2026.16.1 was a pre-release that failed to publish the panel image.)
 developer: raccommode
 website: https://github.com/raccommode/JellyStack
 dependencies: []

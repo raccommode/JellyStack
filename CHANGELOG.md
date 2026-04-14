@@ -16,7 +16,22 @@ Example: `2026.16.1` is the first release of week 16, 2026. The next release
 in the same week would be `2026.16.2`; the first release of the following
 week would be `2026.17.1`.
 
-## [2026.16.1] — 2026-04-14
+## [2026.16.2] — 2026-04-14
+
+### Fixed
+
+- Dockerfile was `COPY --from=builder /app/public` but Next.js doesn't
+  create `public/` by default — the Docker build failed at that step.
+  Added an empty `jellystack-app/public/.gitkeep` so the directory exists.
+- `ghcr.io/manimatter/decluttarr:v1.61.0` → the tag never existed;
+  upstream's latest is `v1.50.2`.
+
+### Note
+
+`2026.16.1` was tagged but never successfully published because of the
+missing `public/` directory above. That version is retired.
+
+## [2026.16.1] — 2026-04-14 (superseded)
 
 ### Added
 
@@ -47,3 +62,4 @@ week would be `2026.17.1`.
 - WebSocket forwarding in the reverse proxy.
 
 [2026.16.1]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.1
+[2026.16.2]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.2
