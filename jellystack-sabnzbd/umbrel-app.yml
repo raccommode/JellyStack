@@ -1,0 +1,40 @@
+manifestVersion: 1.1
+id: jellystack-sabnzbd
+category: networking
+name: SABnzbd (JellyStack)
+version: "4.4.1"
+tagline: Binary newsreader for automated Usenet downloading.
+description: >-
+  SABnzbd is a free and easy-to-use binary newsreader that makes Usenet
+  as simple and streamlined as possible. It automates the entire download
+  process from NZB file to finished, ready-to-use media, handling download,
+  repair, extraction, and sorting without manual intervention.
+
+  Within the JellyStack ecosystem, SABnzbd serves as the Usenet download
+  client counterpart to qBittorrent, integrating seamlessly with Sonarr,
+  Radarr, Lidarr, and Readarr to fetch content from Usenet providers.
+  Downloaded files are made available to the rest of the stack via the
+  shared JellyStack media root, ready to be processed and imported into
+  your Jellyfin library.
+
+  Features include priority-based queue management, automatic repair via
+  PAR2, automatic extraction of multi-part archives, categorization of
+  downloads, and a clean responsive web interface. Full support for SSL
+  connections, server rotation, and bandwidth scheduling.
+releaseNotes: Initial JellyStack release.
+developer: SABnzbd Team
+website: https://sabnzbd.org
+dependencies: []
+repo: https://github.com/sabnzbd/sabnzbd
+support: https://github.com/raccommode/JellyStack/issues
+port: 8085
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

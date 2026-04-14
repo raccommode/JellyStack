@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: jellystack-dozzle_server_1
+      APP_PORT: 8080
+      PROXY_AUTH_ADD: "true"
+
+  server:
+    image: amir20/dozzle:v8.8.2
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      - DOZZLE_LEVEL=info
+      - TZ=${TZ:-UTC}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

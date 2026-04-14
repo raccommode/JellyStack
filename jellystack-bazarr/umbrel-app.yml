@@ -1,0 +1,30 @@
+manifestVersion: 1.1
+id: jellystack-bazarr
+category: media
+name: Bazarr (JellyStack)
+version: "1.5.2"
+tagline: Companion app for Sonarr and Radarr — manages and downloads subtitles.
+description: >-
+  Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles
+  based on your requirements. It communicates with your *arr apps to know what media you have,
+  then fetches missing subtitles from a long list of providers.
+
+
+  The JellyStack Panel auto-links Bazarr to any installed Sonarr and Radarr so it picks up your
+  library immediately.
+releaseNotes: Initial JellyStack release.
+developer: Morpheus65535
+website: https://www.bazarr.media
+dependencies: []
+repo: https://github.com/morpheus65535/bazarr
+support: https://github.com/morpheus65535/bazarr/issues
+port: 6767
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

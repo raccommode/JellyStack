@@ -1,0 +1,39 @@
+manifestVersion: 1.1
+id: jellystack-tdarr
+category: media
+name: Tdarr (JellyStack)
+version: "2.30.01"
+tagline: Distributed transcoding platform for massive media libraries.
+description: >-
+  Tdarr is a distributed transcoding application for automation of media library analytics,
+  conversion and error detection. It can transcode your entire library to a target codec (e.g.
+  H.265) in the background, while saving space and keeping everything Jellyfin-compatible.
+
+
+  This JellyStack build runs Tdarr Server + one internal worker node so it works out of the
+  box. You can add extra worker nodes on beefier machines later.
+
+
+  🛠️ SETUP NOTES
+
+
+  - Transcode cache lives at `/data/transcode-cache` (temp) so jobs don't churn SSD pages.
+
+  - GPU acceleration: Intel `/dev/dri` is passed through by default. For NVIDIA, follow
+    `shared/docs/gpu-transcoding.md`.
+releaseNotes: Initial JellyStack release.
+developer: HaveAGitGat
+website: https://home.tdarr.io
+dependencies: []
+repo: https://github.com/HaveAGitGat/Tdarr
+support: https://github.com/HaveAGitGat/Tdarr/issues
+port: 8265
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

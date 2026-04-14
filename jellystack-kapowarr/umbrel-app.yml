@@ -1,0 +1,39 @@
+manifestVersion: 1.1
+id: jellystack-kapowarr
+category: media
+name: Kapowarr (JellyStack)
+version: "v1.1.0"
+tagline: Comic book manager and downloader.
+description: >-
+  Kapowarr is a self-hosted comic book manager inspired by the *arr
+  family of apps. It handles library management, metadata from ComicVine,
+  automatic downloading via Getcomics, renaming, and conversion of your
+  comic book collection.
+
+  In the JellyStack ecosystem, Kapowarr fills the comics niche that
+  neither Readarr nor Lidarr cover well. Pair it with Kavita or Komga
+  for reading, and with your usual indexers and clients for acquisition.
+  Downloaded comics land in the shared JellyStack media root, ready to
+  be served by any comics front-end.
+
+  Features include volume and issue-level management, automatic search
+  and grab, post-processing (rename, convert, zip to cbz), ComicVine
+  integration for rich metadata, and a modern responsive web UI.
+  Supports torrent magnet handoff to external clients.
+releaseNotes: Initial JellyStack release.
+developer: Casvt
+website: https://github.com/Casvt/Kapowarr
+dependencies: []
+repo: https://github.com/Casvt/Kapowarr
+support: https://github.com/raccommode/JellyStack/issues
+port: 5656
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

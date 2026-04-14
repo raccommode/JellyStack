@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: jellystack-jellystat_web_1
+      APP_PORT: 3000
+      PROXY_AUTH_ADD: "false"
+
+  db:
+    image: postgres:15.10
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      - POSTGRES_USER=jellystat
+      - POSTGRES_PASSWORD=${APP_SEED}
+      - POSTGRES_DB=jfstat
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jellystat -d jfstat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: cyfershepard/jellystat:1.1.9
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      - POSTGRES_USER=jellystat
+      - POSTGRES_PASSWORD=${APP_SEED}
+      - POSTGRES_IP=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=jfstat
+      - JWT_SECRET=${APP_SEED}
+      - TZ=${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/backup:/app/backend/backup-data
+    depends_on:
+      db:
+        condition: service_healthy

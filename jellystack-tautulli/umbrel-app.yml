@@ -1,0 +1,37 @@
+manifestVersion: 1.1
+id: jellystack-tautulli
+category: media
+name: Tautulli (JellyStack)
+version: "2.15.1"
+tagline: Monitoring and tracking tool for your media server.
+description: >-
+  Tautulli is a Python-based monitoring and tracking tool originally
+  developed for Plex Media Server. It provides detailed analytics,
+  historical playback stats, user activity reports, and rich
+  notifications for your media streaming activity.
+
+  In the JellyStack ecosystem, Tautulli can be used alongside Jellyfin
+  (via compatible API endpoints and community forks) or with a Plex
+  server if you run one in parallel. It provides beautiful graphs of
+  watch time, top users, most-played content, and can send alerts when
+  playback starts, stops, or issues occur.
+
+  Features include detailed per-user and per-library statistics, email
+  and webhook notifications, newsletter generation, playback history
+  exports, and IP geolocation for streams. A must-have companion for
+  anyone serious about understanding how their media library is used.
+releaseNotes: Initial JellyStack release.
+developer: Tautulli Team
+website: https://tautulli.com
+dependencies:
+  - jellystack-jellyfin
+repo: https://github.com/Tautulli/Tautulli
+support: https://github.com/raccommode/JellyStack/issues
+port: 8181
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

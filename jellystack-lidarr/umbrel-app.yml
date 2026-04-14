@@ -1,0 +1,30 @@
+manifestVersion: 1.1
+id: jellystack-lidarr
+category: media
+name: Lidarr (JellyStack)
+version: "2.9.6"
+tagline: Music collection manager for Usenet and BitTorrent.
+description: >-
+  Lidarr is a music collection manager built on the *arr stack. It monitors RSS feeds from
+  your indexers and grabs, sorts, renames and tags music releases for you.
+
+
+  The JellyStack Panel pre-sets the root folder to `/data/media/music` and wires Lidarr to
+  Prowlarr + qBittorrent / SABnzbd on first run.
+releaseNotes: Initial JellyStack release.
+developer: Team Lidarr
+website: https://lidarr.audio
+dependencies: []
+repo: https://github.com/Lidarr/Lidarr
+support: https://github.com/Lidarr/Lidarr/issues
+port: 8686
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

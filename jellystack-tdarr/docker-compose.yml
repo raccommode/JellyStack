@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: jellystack-tdarr_server_1
+      APP_PORT: 8265
+      PROXY_AUTH_ADD: "true"
+
+  server:
+    image: ghcr.io/haveagitgat/tdarr:2.30.01
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      - TZ=${TZ:-UTC}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - nodeName=MyInternalNode
+    volumes:
+      - ${APP_DATA_DIR}/data/server:/app/server
+      - ${APP_DATA_DIR}/data/configs:/app/configs
+      - ${APP_DATA_DIR}/data/logs:/app/logs
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media:/media
+      - ${APP_DATA_DIR}/data/transcode-cache:/temp
+    devices:
+      - /dev/dri:/dev/dri

@@ -1,0 +1,32 @@
+manifestVersion: 1.1
+id: jellystack-jellystat
+category: media
+name: Jellystat (JellyStack)
+version: "1.1.9"
+tagline: Viewing statistics and analytics dashboard for Jellyfin.
+description: >-
+  Jellystat is a free and open source statistics program for Jellyfin. It shows who's watching
+  what, for how long, and historical playback across your server — like Tautulli for Plex, but
+  for Jellyfin.
+
+
+  The JellyStack Panel auto-provisions Jellystat with a Jellyfin admin API key so the dashboard
+  works immediately after install. No manual API-key copy-paste required.
+
+
+  ℹ️ This app bundles its own PostgreSQL 15 database internally (not exposed).
+releaseNotes: Initial JellyStack release.
+developer: CyferShepard
+website: https://github.com/CyferShepard/Jellystat
+dependencies:
+  - jellystack-jellyfin
+repo: https://github.com/CyferShepard/Jellystat
+support: https://github.com/CyferShepard/Jellystat/issues
+port: 3000
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

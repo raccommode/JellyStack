@@ -1,0 +1,39 @@
+manifestVersion: 1.1
+id: jellystack-audiobookshelf
+category: media
+name: Audiobookshelf (JellyStack)
+version: "2.19.4"
+tagline: Self-hosted audiobook and podcast server.
+description: >-
+  Audiobookshelf is a self-hosted audiobook and podcast server that
+  streams your collection to any device. With a polished web UI, native
+  mobile apps for iOS and Android, and full podcast management, it is
+  the premier open-source alternative to Audible.
+
+  In the JellyStack ecosystem, Audiobookshelf is the audiobook and
+  podcast specialist. While Jellyfin can serve audiobooks, Audiobookshelf
+  offers a dramatically better experience: proper chapter support,
+  playback speed controls, bookmarks, sleep timers, and full-text
+  search across books. Pair it with Readarr for automatic acquisition.
+
+  Features include multi-user support with individual progress tracking,
+  podcast auto-downloading, ebook hosting, OPDS feeds, streaming and
+  offline playback in mobile apps, library statistics, and a robust
+  metadata system with multiple provider sources. Scans your existing
+  audiobook folder structure non-destructively.
+releaseNotes: Initial JellyStack release.
+developer: advplyr
+website: https://www.audiobookshelf.org
+dependencies: []
+repo: https://github.com/advplyr/audiobookshelf
+support: https://github.com/raccommode/JellyStack/issues
+port: 13378
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

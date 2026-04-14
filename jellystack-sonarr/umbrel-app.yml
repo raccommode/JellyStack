@@ -1,0 +1,31 @@
+manifestVersion: 1.1
+id: jellystack-sonarr
+category: media
+name: Sonarr (JellyStack)
+version: "4.0.15"
+tagline: Smart PVR for newsgroup and bittorrent users — series edition.
+description: >-
+  Sonarr is a PVR for Usenet and BitTorrent. It monitors multiple RSS feeds for new episodes
+  of your favorite shows and grabs, sorts and renames them.
+
+
+  The JellyStack Panel will auto-configure Sonarr with Prowlarr (indexers) and qBittorrent /
+  SABnzbd (download clients) as soon as you install them, using the `/data/downloads/*` and
+  `/data/media/tv` paths already mounted here.
+releaseNotes: Initial JellyStack release.
+developer: Team Sonarr
+website: https://sonarr.tv
+dependencies: []
+repo: https://github.com/Sonarr/Sonarr
+support: https://sonarr.tv/#forms
+port: 8989
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

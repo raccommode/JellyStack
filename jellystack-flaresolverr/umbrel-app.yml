@@ -1,0 +1,35 @@
+manifestVersion: 1.1
+id: jellystack-flaresolverr
+category: networking
+name: FlareSolverr (JellyStack)
+version: "v3.3.21"
+tagline: Proxy server to bypass Cloudflare and DDoS-GUARD protection.
+description: >-
+  FlareSolverr is a proxy server that helps bypass Cloudflare and
+  DDoS-GUARD protection. It uses a headless browser to solve the
+  challenges and returns the cookies and user-agent needed for your
+  scrapers and tools to access protected sites.
+
+  Within JellyStack, FlareSolverr is a critical companion to Prowlarr
+  and the *arr suite, enabling indexer access to sites protected by
+  Cloudflare's anti-bot measures. Without it, many public and private
+  torrent trackers would be unreachable by your automation stack.
+
+  Configure Prowlarr to point at this FlareSolverr instance and it will
+  transparently handle challenge resolution for any indexer that
+  requires it. Lightweight, stateless, and requires no persistent
+  storage.
+releaseNotes: Initial JellyStack release.
+developer: FlareSolverr Team
+website: https://github.com/FlareSolverr/FlareSolverr
+dependencies: []
+repo: https://github.com/FlareSolverr/FlareSolverr
+support: https://github.com/raccommode/JellyStack/issues
+port: 8191
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

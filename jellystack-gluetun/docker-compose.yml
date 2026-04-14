@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: jellystack-gluetun_server_1
+      # Gluetun's internal control server: https://github.com/qdm12/gluetun/wiki/Control-server
+      APP_PORT: 8000
+      PROXY_AUTH_ADD: "true"
+
+  server:
+    image: qmcgaw/gluetun:v3.40.0
+    restart: on-failure
+    stop_grace_period: 30s
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - TZ=${TZ:-UTC}
+      # Control server (read-only status / used by the JellyStack Panel).
+      - HTTP_CONTROL_SERVER_ADDRESS=:8000
+      # Provider config — populated by the JellyStack Panel Settings page.
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER:-mullvad}
+      - VPN_TYPE=${VPN_TYPE:-wireguard}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY:-}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES:-}
+      - SERVER_CITIES=${SERVER_CITIES:-}
+      # Kill-switch: block all non-VPN traffic once the tunnel is up.
+      - FIREWALL_OUTBOUND_SUBNETS=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/gluetun
+    # Ports are declared here so containers that share Gluetun's network namespace
+    # (e.g. a qBittorrent override) can still be reached from the host.
+    ports:
+      - "8080:8080"   # qBittorrent WebUI (when tunnelled)
+      - "6881:6881"   # qBittorrent BT listen (TCP)
+      - "6881:6881/udp"

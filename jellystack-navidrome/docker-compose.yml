@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: jellystack-navidrome_server_1
+      APP_PORT: 4533
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: deluan/navidrome:0.54.5
+    restart: on-failure
+    stop_grace_period: 30s
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      - ND_MUSICFOLDER=/music
+      - ND_DATAFOLDER=/data
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_SESSIONTIMEOUT=24h
+      - TZ=${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/data
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/music:/music:ro

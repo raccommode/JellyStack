@@ -1,0 +1,41 @@
+manifestVersion: 1.1
+id: jellystack-cross-seed
+category: automation
+name: cross-seed (JellyStack)
+version: "6.13.0"
+tagline: Automatically cross-seed your torrents across multiple trackers.
+description: >-
+  cross-seed searches across multiple torrent trackers for releases
+  matching files you already have downloaded. When a match is found, it
+  adds the torrent to your client and starts seeding immediately,
+  dramatically boosting your ratio across private trackers without
+  re-downloading a single byte.
+
+  Within JellyStack, cross-seed works alongside qBittorrent and Prowlarr
+  to help you get the most out of your seeding setup. Configure your
+  indexers once via Prowlarr, point cross-seed at your torrents and
+  data directories, and let it find every tracker that has a matching
+  release.
+
+  Features include support for qBittorrent, Deluge, Transmission, and
+  rTorrent; fuzzy matching by file size and name; a daemon mode for
+  continuous matching of new downloads; RSS-based searches; and
+  webhook-triggered searches when new content arrives. Highly
+  configurable to respect tracker rules.
+releaseNotes: Initial JellyStack release.
+developer: cross-seed Contributors
+website: https://www.cross-seed.org
+dependencies: []
+repo: https://github.com/cross-seed/cross-seed
+support: https://github.com/raccommode/JellyStack/issues
+port: 2468
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

@@ -1,0 +1,37 @@
+manifestVersion: 1.1
+id: jellystack-profilarr
+category: automation
+name: Profilarr (JellyStack)
+version: "latest"
+tagline: Sync and manage quality profiles across your *arr stack.
+description: >-
+  Profilarr is a tool for syncing and managing custom formats and
+  quality profiles across your Sonarr and Radarr instances. It pulls
+  community-curated profiles from Git repositories and keeps your setup
+  aligned with best practices, eliminating hours of manual profile
+  tweaking.
+
+  In the JellyStack ecosystem, Profilarr is the opinionated companion
+  to Sonarr and Radarr that turns the dark art of custom formats into
+  a one-click experience. Get optimized profiles for HDR, Dolby Vision,
+  remuxes, web-dl tiers, and more without reading forum threads for
+  hours.
+
+  Features include Git-based profile sync, a friendly web UI for
+  selecting and applying profiles, support for multiple Sonarr/Radarr
+  instances, automatic updates when upstream profiles change, and
+  backup/restore of your custom format configuration.
+releaseNotes: Initial JellyStack release.
+developer: Santiago Says Hey
+website: https://github.com/Dictionarry-Hub/profilarr
+dependencies: []
+repo: https://github.com/Dictionarry-Hub/profilarr
+support: https://github.com/raccommode/JellyStack/issues
+port: 6868
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

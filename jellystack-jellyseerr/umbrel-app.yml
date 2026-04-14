@@ -1,0 +1,29 @@
+manifestVersion: 1.1
+id: jellystack-jellyseerr
+category: media
+name: Jellyseerr (JellyStack)
+version: "2.5.2"
+tagline: Beautiful media-request UI for Jellyfin users.
+description: >-
+  Jellyseerr is a free and open-source software application for managing requests for your
+  media library. It is a fork of Overseerr built to bring support for Jellyfin and Emby media
+  servers.
+
+
+  The JellyStack Panel will automatically link Jellyseerr to Jellyfin, Sonarr and Radarr on
+  first run — users request a title, the *arr apps grab it, Jellyfin streams it.
+releaseNotes: Initial JellyStack release.
+developer: Fallenbagel
+website: https://github.com/fallenbagel/jellyseerr
+dependencies:
+  - jellystack-jellyfin
+repo: https://github.com/fallenbagel/jellyseerr
+support: https://github.com/fallenbagel/jellyseerr/issues
+port: 5055
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack
