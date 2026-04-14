@@ -11,7 +11,10 @@ export default createMiddleware({
 export const config = {
   // Match all pathnames except:
   //   - /api/*      (API routes, locale-agnostic)
+  //   - /proxy/*    (reverse proxy to bundled services — must NOT be
+  //                  rewritten with a locale prefix, otherwise the
+  //                  proxy route handler is never reached)
   //   - /_next/*    (Next.js internals)
   //   - static assets (images, favicons, etc.)
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  matcher: ["/((?!api|proxy|_next|.*\\..*).*)"],
 };

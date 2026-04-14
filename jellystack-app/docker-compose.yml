@@ -27,7 +27,7 @@ services:
     # pushes to main (as `:latest` + `:main`). Pinned to a release tag for
     # reproducibility; bump alongside jellystack-app/package.json and
     # umbrel-app.yml `version:`.
-    image: ghcr.io/raccommode/jellystack-panel:2026.16.3
+    image: ghcr.io/raccommode/jellystack-panel:2026.16.4
     restart: on-failure
     stop_grace_period: 30s
     environment:

@@ -52,6 +52,44 @@ function isKnownService(id: string): id is ServiceId {
   }
 }
 
+/**
+ * Rewrite absolute Location: values so the browser follows them back through
+ * the panel instead of falling off the /proxy/<service> namespace.
+ *
+ *   /web/index.html            → /proxy/<service>/web/index.html
+ *   http://jellyfin:8096/foo   → /proxy/<service>/foo   (same upstream origin)
+ *   https://external.example/x → kept as-is (cross-origin redirect)
+ *
+ * Relative Locations (without leading slash) are passed through unchanged —
+ * the browser resolves them relative to the current request URL which
+ * already sits under /proxy/<service>/.
+ */
+function rewriteLocation(location: string, service: string): string {
+  if (!location) return location;
+  const prefix = `/proxy/${service}`;
+  if (location.startsWith(`${prefix}/`)) return location;
+
+  // Absolute URL: only rewrite when it points at the upstream we just proxied.
+  if (/^https?:\/\//i.test(location)) {
+    try {
+      const url = new URL(location);
+      if (url.hostname === service) {
+        return `${prefix}${url.pathname}${url.search}${url.hash}`;
+      }
+    } catch {
+      // Malformed URL — leave it alone.
+    }
+    return location;
+  }
+
+  // Absolute path from the upstream's root.
+  if (location.startsWith("/")) {
+    return `${prefix}${location}`;
+  }
+
+  return location;
+}
+
 async function proxy(req: NextRequest, ctx: RouteContext): Promise<Response> {
   const { service, path } = await ctx.params;
 
@@ -99,13 +137,20 @@ async function proxy(req: NextRequest, ctx: RouteContext): Promise<Response> {
   // Copy response headers, stripping the ones that would block iframe embedding
   // back into the panel (we are on the same origin, so CSP/X-Frame-Options
   // restrictions from the upstream app are not meaningful — they were written
-  // for standalone deployments).
+  // for standalone deployments). Also rewrite `Location:` on redirects so that
+  // absolute paths emitted by the upstream (e.g. Jellyfin's `302 -> /web/`)
+  // stay inside our `/proxy/<service>` namespace instead of escaping to the
+  // panel's own routes (where they'd 404).
   const responseHeaders = new Headers();
   for (const [k, v] of upstream.headers) {
     const lower = k.toLowerCase();
     if (HOP_BY_HOP_HEADERS.has(lower)) continue;
     if (lower === "x-frame-options") continue;
     if (lower === "content-security-policy") continue;
+    if (lower === "location") {
+      responseHeaders.append(k, rewriteLocation(v, service));
+      continue;
+    }
     responseHeaders.append(k, v);
   }
 

@@ -16,6 +16,22 @@ Example: `2026.16.1` is the first release of week 16, 2026. The next release
 in the same week would be `2026.16.2`; the first release of the following
 week would be `2026.17.1`.
 
+## [2026.16.4] — 2026-04-14
+
+### Fixed
+
+- **Reverse proxy was unreachable.** The `next-intl` middleware's matcher
+  only excluded `/api/*` and `/_next/*`, so `/proxy/<service>/*` was being
+  rewritten to `/<locale>/proxy/<service>/*` → the panel's 404 page. Add
+  `proxy` to the matcher's exclusion list so the catch-all route handler
+  actually runs. This is why every service iframe rendered a Next.js
+  "This page could not be found." error.
+- **Redirects escaped the /proxy namespace.** Upstream apps that emit
+  absolute `Location:` headers (e.g. Jellyfin's `302 → /web/`) would
+  bounce the browser to `/web/` on the panel's own router, which also
+  404s. The proxy now rewrites `Location:` values so they stay inside
+  `/proxy/<service>/`.
+
 ## [2026.16.3] — 2026-04-14
 
 ### Fixed
@@ -75,3 +91,4 @@ missing `public/` directory above. That version is retired.
 [2026.16.1]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.1
 [2026.16.2]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.2
 [2026.16.3]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.3
+[2026.16.4]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.4
