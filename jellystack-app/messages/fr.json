@@ -119,5 +119,10 @@
   "languageSwitcher": {
     "label": "Changer de langue",
     "current": "Langue actuelle : {name}"
+  },
+  "notFound": {
+    "title": "Cette page n'existe pas",
+    "body": "Le lien que tu as suivi est peut-être périmé, ou l'identifiant de l'appli est inconnu.",
+    "cta": "Retour au tableau de bord"
   }
 }

@@ -119,5 +119,10 @@
   "languageSwitcher": {
     "label": "Change language",
     "current": "Current language: {name}"
+  },
+  "notFound": {
+    "title": "This page doesn't exist",
+    "body": "The link you followed may be outdated, or the app id is unknown.",
+    "cta": "Back to dashboard"
   }
 }
