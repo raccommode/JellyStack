@@ -1,0 +1,89 @@
+{
+  "common": {
+    "appName": "JellyStack",
+    "tagline": "La stack média Jellyfin complète, configurée pour toi.",
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue.",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "next": "Suivant",
+    "back": "Retour",
+    "finish": "Terminer",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "unknown": "Inconnu"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "apps": "Applications",
+    "wizard": "Assistant de configuration",
+    "settings": "Paramètres",
+    "logs": "Journaux"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Toutes tes applis média, en un coup d'œil.",
+    "detected": "{count, plural, =0 {Aucune application détectée} one {# application détectée} other {# applications détectées}}",
+    "notConfigured": "À configurer",
+    "openApp": "Ouvrir",
+    "empty": {
+      "title": "Aucune application JellyStack installée",
+      "description": "Rends-toi dans l'App Store Umbrel pour installer les applications JellyStack que tu veux utiliser.",
+      "cta": "Ouvrir l'App Store"
+    }
+  },
+  "wizard": {
+    "title": "Bienvenue dans JellyStack",
+    "subtitle": "On connecte tes applis entre elles en quelques clics.",
+    "welcome": {
+      "heading": "Mettons ta stack en ligne",
+      "body": "JellyStack va détecter chaque service embarqué et te guider sur la poignée de réglages qui demandent vraiment une décision de ta part.",
+      "detected": "{count, plural, =0 {Aucun service détecté} one {# service détecté} other {# services détectés}}"
+    },
+    "secrets": {
+      "heading": "Clés d'API",
+      "body": "La plupart des applis génèrent leur propre clé d'API au premier démarrage. On les relit pour toi, tu n'as rien à copier-coller.",
+      "autoDetected": "Auto-détectée",
+      "notFound": "Pas encore dispo"
+    },
+    "recipes": {
+      "prowlarr": {
+        "heading": "Connecter Prowlarr à la suite *arr",
+        "body": "Prowlarr devient le point unique où tu gères tes indexers. On enregistre Sonarr, Radarr, Lidarr et Readarr auprès de lui pour que les indexers se propagent tout seuls."
+      },
+      "paths": {
+        "heading": "Pré-configurer les chemins média",
+        "body": "On dit à chaque appli *arr où sa bibliothèque vit sur le disque : films dans /data/media/movies, séries dans /data/media/tv, etc."
+      },
+      "qbit": {
+        "heading": "Enregistrer les clients de téléchargement",
+        "body": "On ajoute qBittorrent (et SABnzbd si présent) comme client de téléchargement sur chaque appli *arr, avec des catégories qui trient chaque type de média dans son dossier."
+      }
+    },
+    "recipeCommon": {
+      "readyToRun": "Prêt à lancer. Cette action est idempotente — la relancer ne duplique rien.",
+      "running": "En cours…",
+      "run": "Lancer",
+      "runAgain": "Relancer",
+      "skip": "Passer",
+      "error": "Erreur"
+    },
+    "done": {
+      "heading": "C'est bon, tout est prêt",
+      "body": "Ta JellyStack est branchée. Tu peux toujours relancer l'assistant depuis les Paramètres.",
+      "cta": "Retour au tableau de bord"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": {
+      "label": "Langue",
+      "hint": "Change la langue du panel. Les applis gardent leur propre langue."
+    }
+  },
+  "languageSwitcher": {
+    "label": "Changer de langue",
+    "current": "Langue actuelle : {name}"
+  }
+}

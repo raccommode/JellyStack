@@ -1,51 +1,60 @@
 #!/usr/bin/env python3
-"""Umbrel-aware validator for every `jellystack-*/docker-compose.yml`.
+"""Umbrel-aware validator for the monolithic `jellystack-app/docker-compose.yml`.
 
 `docker compose config` rejects Umbrel's `app_proxy` service because it has no
 `image:` (the service is injected at runtime by umbrelOS). This script parses
-each manifest and enforces the rules we actually care about:
+the compose and enforces the rules we care about:
 
   - Top-level `services:` must exist.
   - Every non-`app_proxy` service must declare an `image:` with a pinned tag.
-  - `app_proxy` (if present) must declare `APP_HOST` and `APP_PORT` env vars.
-  - Volumes referencing `${UMBREL_ROOT}` / `${APP_DATA_DIR}` / `${JELLYSTACK_ROOT}`
-    are allowed (these are the standard Umbrel + JellyStack env vars).
+  - `app_proxy` must declare `APP_HOST` and `APP_PORT` env vars.
+  - The compose must include all services listed in the panel's service
+    registry (jellystack-app/src/lib/services.ts), so adding a service to the
+    registry without adding it to compose fails CI.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-ALLOWED_ENV_VARS = {"UMBREL_ROOT", "APP_DATA_DIR", "JELLYSTACK_ROOT", "APP_SEED",
-                    "APP_HIDDEN_SERVICE", "DEVICE_HOSTNAME", "DEVICE_DOMAIN_NAME",
-                    "PUID", "PGID", "UMASK", "TZ",
-                    "VPN_SERVICE_PROVIDER", "VPN_TYPE", "WIREGUARD_PRIVATE_KEY",
-                    "WIREGUARD_ADDRESSES", "SERVER_CITIES"}
+COMPOSE_FILE = REPO_ROOT / "jellystack-app" / "docker-compose.yml"
+SERVICES_TS = REPO_ROOT / "jellystack-app" / "src" / "lib" / "services.ts"
 
 
-def validate_file(path: Path) -> list[str]:
+def parse_registry_service_ids() -> set[str]:
+    """Extract service ids from the `SERVICES` array in `services.ts`."""
+    if not SERVICES_TS.exists():
+        return set()
+    text = SERVICES_TS.read_text()
+    ids = re.findall(r'id:\s*"([a-z][a-z0-9-]*)"', text)
+    return set(ids)
+
+
+def validate(data: dict) -> list[str]:
     errors: list[str] = []
-    with path.open() as f:
-        try:
-            data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            return [f"YAML parse error: {e}"]
-
-    if not isinstance(data, dict):
-        return ["top-level must be a mapping"]
-
     services = data.get("services")
     if not isinstance(services, dict):
         return ["missing or invalid `services:` mapping"]
 
-    has_app_proxy = "app_proxy" in services
-    real_services = {k: v for k, v in services.items() if k != "app_proxy"}
+    if "app_proxy" not in services:
+        errors.append("missing required `app_proxy` service")
+    else:
+        env = services["app_proxy"].get("environment") if isinstance(services["app_proxy"], dict) else None
+        if not isinstance(env, dict):
+            errors.append("app_proxy `environment:` is not a mapping")
+        else:
+            if "APP_HOST" not in env:
+                errors.append("app_proxy is missing `APP_HOST`")
+            if "APP_PORT" not in env:
+                errors.append("app_proxy is missing `APP_PORT`")
 
-    if not real_services:
-        errors.append("no real service defined (only app_proxy)")
+    real_services = {k: v for k, v in services.items() if k != "app_proxy"}
+    if "panel" not in real_services:
+        errors.append("missing required `panel` service")
 
     for name, svc in real_services.items():
         if not isinstance(svc, dict):
@@ -57,43 +66,42 @@ def validate_file(path: Path) -> list[str]:
         elif ":" not in str(image):
             errors.append(f"service `{name}` image `{image}` is not tagged")
 
-    if has_app_proxy:
-        proxy = services["app_proxy"]
-        env = proxy.get("environment", {}) if isinstance(proxy, dict) else {}
-        if isinstance(env, dict):
-            if "APP_HOST" not in env:
-                errors.append("app_proxy is missing `APP_HOST`")
-            if "APP_PORT" not in env:
-                errors.append("app_proxy is missing `APP_PORT`")
-        else:
-            errors.append("app_proxy `environment:` is not a mapping")
+    # Every service advertised in the registry must exist in compose.
+    registry = parse_registry_service_ids()
+    if registry:
+        missing = registry - set(real_services.keys())
+        if missing:
+            errors.append(
+                "services advertised in the registry but missing from compose: "
+                + ", ".join(sorted(missing))
+            )
 
     return errors
 
 
 def main() -> int:
-    compose_files = sorted(REPO_ROOT.glob("jellystack-*/docker-compose.yml"))
-    if not compose_files:
-        print("No jellystack-*/docker-compose.yml found.", file=sys.stderr)
+    if not COMPOSE_FILE.exists():
+        print(f"Compose file not found: {COMPOSE_FILE}", file=sys.stderr)
         return 1
 
-    total_errors = 0
-    for f in compose_files:
-        rel = f.relative_to(REPO_ROOT)
-        errs = validate_file(f)
-        if errs:
-            total_errors += len(errs)
-            print(f"❌ {rel}")
-            for e in errs:
-                print(f"    - {e}")
-        else:
-            print(f"✓ {rel}")
+    with COMPOSE_FILE.open() as f:
+        try:
+            data = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            print(f"❌ {COMPOSE_FILE.name}: YAML parse error: {e}", file=sys.stderr)
+            return 1
 
-    print()
-    if total_errors:
-        print(f"{total_errors} error(s) across {len(compose_files)} files.", file=sys.stderr)
+    errors = validate(data)
+    rel = COMPOSE_FILE.relative_to(REPO_ROOT)
+    if errors:
+        print(f"❌ {rel}")
+        for e in errors:
+            print(f"    - {e}")
         return 1
-    print(f"All {len(compose_files)} compose files valid.")
+
+    services = data.get("services", {})
+    real_count = len([k for k in services if k != "app_proxy"])
+    print(f"✓ {rel} ({real_count} services)")
     return 0
 
 

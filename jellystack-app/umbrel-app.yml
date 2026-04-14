@@ -1,0 +1,69 @@
+manifestVersion: 1.1
+id: jellystack-app
+category: media
+name: JellyStack
+version: "0.1.0"
+tagline: The complete Jellyfin media stack — one install, one dashboard, zero config.
+description: >-
+  JellyStack bundles Jellyfin, the *arr suite (Sonarr, Radarr, Lidarr, Readarr, Bazarr,
+  Prowlarr), download clients (qBittorrent, SABnzbd, JDownloader), a VPN tunnel (Gluetun),
+  transcoding tools (Tdarr), monitoring (Tautulli, Jellystat, Dozzle), automation
+  (Unpackerr, Decluttarr, Cross-seed, Autobrr, Janitorr, Profilarr), and media extras
+  (FlareSolverr, Kapowarr, Wizarr, Navidrome, Kavita, Audiobookshelf) into a single
+  Umbrel app.
+
+
+  ✨ ONE INSTALL, EVERYTHING WIRED
+
+
+  You install JellyStack, ~30 containers start up together, and the JellyStack web panel
+  wires them to each other automatically — no API keys to paste, no download clients to
+  register manually, no indexer lists to copy. The welcome wizard takes you through any
+  decision that actually needs you (Jellyfin admin account, VPN credentials) and leaves
+  everything else on defaults that just work.
+
+
+  🎛️ ONE DASHBOARD
+
+
+  Every bundled app is reachable through the JellyStack panel's sidebar — no hunting for
+  port numbers, no 30 separate tiles cluttering your Umbrel home. Panel ships in English
+  and French; new languages are three-step translations away.
+
+
+  📁 SMART STORAGE
+
+
+  Media and downloads live side-by-side under `/home/umbrel/umbrel/JellyStack`, so
+  qBittorrent and the *arr apps import with hard links (instant, no disk copy, seeding
+  stays intact).
+
+
+  🛠️ SETUP
+
+
+  1. Install JellyStack from the Umbrel App Store.
+
+  2. Open the JellyStack panel.
+
+  3. Follow the welcome wizard.
+releaseNotes: >-
+  Initial release. JellyStack is a single Umbrel app that starts the full Jellyfin media
+  stack in one install. The web panel auto-configures Prowlarr, the *arr suite, and
+  download clients.
+developer: raccommode
+website: https://github.com/raccommode/JellyStack
+dependencies: []
+repo: https://github.com/raccommode/JellyStack
+support: https://github.com/raccommode/JellyStack/issues
+port: 5000
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions:
+  - STORAGE_DOWNLOADS
+  - STORAGE_MEDIA
+submitter: raccommode
+submission: https://github.com/raccommode/JellyStack

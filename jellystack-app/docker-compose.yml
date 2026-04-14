@@ -1,0 +1,349 @@
+# JellyStack — monolithic Umbrel app.
+#
+# When you install JellyStack from the Umbrel App Store, this one compose
+# brings up the entire Jellyfin media stack: the web panel plus ~30 media,
+# download, automation, and monitoring services. Services talk to each other
+# on the project's default bridge network using their Docker service name
+# (e.g. `http://sonarr:8989`). The panel is the only externally-exposed UI
+# via Umbrel's `app_proxy`.
+
+x-common-env: &common-env
+  PUID: ${PUID:-1000}
+  PGID: ${PGID:-1000}
+  TZ: ${TZ:-UTC}
+  UMASK: ${UMASK:-002}
+
+services:
+  # --- Umbrel-facing proxy: fronts the panel only -----------------------------
+  app_proxy:
+    environment:
+      APP_HOST: panel
+      APP_PORT: 5000
+      PROXY_AUTH_ADD: "true"
+
+  # --- The JellyStack web panel (Next.js) ------------------------------------
+  panel:
+    image: ghcr.io/raccommode/jellystack-panel:0.1.0
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      HOSTNAME: 0.0.0.0
+      TZ: ${TZ:-UTC}
+      # Tells the panel we're running inside the monolithic compose, so it
+      # talks to sibling services via Docker DNS (service names) rather than
+      # Umbrel's APP_*_IP / APP_*_PORT env vars.
+      JELLYSTACK_INTERNAL: "true"
+      # Where each service mounts its own persistent config, read-only for us.
+      JELLYSTACK_APPS_DATA_ROOT: /apps-data
+    volumes:
+      - ${APP_DATA_DIR}/data/panel/config:/app/data
+      # Read-only view of every sibling service's config/ dir, so the panel
+      # can auto-extract API keys from Sonarr/Radarr/Prowlarr config.xml.
+      - ${APP_DATA_DIR}/data:/apps-data:ro
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data:ro
+
+  # --- Media core ------------------------------------------------------------
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.10.7
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      <<: *common-env
+      JELLYFIN_PublishedServerUrl: http://${DEVICE_HOSTNAME:-umbrel.local}:8096
+    volumes:
+      - ${APP_DATA_DIR}/data/jellyfin/config:/config
+      - ${APP_DATA_DIR}/data/jellyfin/transcode:/data/transcode
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media:/data/media
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - "7359:7359/udp"
+      - "1900:1900/udp"
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.15
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/sonarr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:5.14.0
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/radarr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:2.9.6
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/lidarr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/readarr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:1.5.2
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/bazarr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media:/data/media
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:1.30.2
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/prowlarr/config:/config
+
+  # --- Requests --------------------------------------------------------------
+  jellyseerr:
+    image: fallenbagel/jellyseerr:2.5.2
+    restart: on-failure
+    environment:
+      LOG_LEVEL: info
+      TZ: ${TZ:-UTC}
+      PORT: 5055
+    volumes:
+      - ${APP_DATA_DIR}/data/jellyseerr/config:/app/config
+
+  # --- Download stack --------------------------------------------------------
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.0.3
+    restart: on-failure
+    environment:
+      <<: *common-env
+      WEBUI_PORT: 8080
+    volumes:
+      - ${APP_DATA_DIR}/data/qbittorrent/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.4.1
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/sabnzbd/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  jdownloader:
+    image: jlesage/jdownloader-2:v25.10.1
+    restart: on-failure
+    environment:
+      USER_ID: ${PUID:-1000}
+      GROUP_ID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/jdownloader/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/downloads/direct:/output
+
+  gluetun:
+    image: qmcgaw/gluetun:v3.40.0
+    restart: on-failure
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      TZ: ${TZ:-UTC}
+      HTTP_CONTROL_SERVER_ADDRESS: :8000
+      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER:-mullvad}
+      VPN_TYPE: ${VPN_TYPE:-wireguard}
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY:-}
+      WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES:-}
+      SERVER_CITIES: ${SERVER_CITIES:-}
+      FIREWALL_OUTBOUND_SUBNETS: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    volumes:
+      - ${APP_DATA_DIR}/data/gluetun/config:/gluetun
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:v3.3.21
+    restart: on-failure
+    environment:
+      LOG_LEVEL: info
+      TZ: ${TZ:-UTC}
+
+  # --- Monitoring & stats ----------------------------------------------------
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:2.15.1
+    restart: on-failure
+    environment:
+      <<: *common-env
+    volumes:
+      - ${APP_DATA_DIR}/data/tautulli/config:/config
+
+  jellystat-db:
+    image: postgres:15.10
+    restart: on-failure
+    environment:
+      POSTGRES_USER: jellystat
+      POSTGRES_PASSWORD: ${APP_SEED}
+      POSTGRES_DB: jfstat
+    volumes:
+      - ${APP_DATA_DIR}/data/jellystat/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jellystat -d jfstat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jellystat:
+    image: cyfershepard/jellystat:1.1.9
+    restart: on-failure
+    environment:
+      POSTGRES_USER: jellystat
+      POSTGRES_PASSWORD: ${APP_SEED}
+      POSTGRES_IP: jellystat-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: jfstat
+      JWT_SECRET: ${APP_SEED}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/jellystat/backup:/app/backend/backup-data
+    depends_on:
+      jellystat-db:
+        condition: service_healthy
+
+  dozzle:
+    image: amir20/dozzle:v8.8.2
+    restart: on-failure
+    environment:
+      DOZZLE_LEVEL: info
+      TZ: ${TZ:-UTC}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # --- Automation ------------------------------------------------------------
+  unpackerr:
+    image: ghcr.io/hotio/unpackerr:release-0.14.5
+    restart: on-failure
+    environment:
+      <<: *common-env
+      UN_WEBSERVER_PORT: 5656
+      UN_WEBSERVER_LISTEN_ADDR: 0.0.0.0
+    volumes:
+      - ${APP_DATA_DIR}/data/unpackerr/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/downloads:/downloads
+
+  decluttarr:
+    image: ghcr.io/manimatter/decluttarr:v1.61.0
+    restart: on-failure
+    environment:
+      TZ: ${TZ:-UTC}
+      LOG_LEVEL: INFO
+
+  cross-seed:
+    image: ghcr.io/cross-seed/cross-seed:6.13.0
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/cross-seed/config:/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/downloads/torrents:/torrents
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
+
+  autobrr:
+    image: ghcr.io/autobrr/autobrr:v1.63.0
+    restart: on-failure
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/autobrr/config:/config
+
+  janitorr:
+    image: ghcr.io/schaka/janitorr-jvm-stable:latest
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/janitorr/logs:/logs
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media:/media
+
+  profilarr:
+    image: santiagosayshey/profilarr:latest
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/profilarr/config:/config
+
+  # --- Transcoding -----------------------------------------------------------
+  tdarr:
+    image: ghcr.io/haveagitgat/tdarr:2.30.01
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      <<: *common-env
+      UMASK_SET: 002
+      serverIP: 0.0.0.0
+      serverPort: 8266
+      webUIPort: 8265
+      internalNode: "true"
+      nodeName: MyInternalNode
+    volumes:
+      - ${APP_DATA_DIR}/data/tdarr/server:/app/server
+      - ${APP_DATA_DIR}/data/tdarr/configs:/app/configs
+      - ${APP_DATA_DIR}/data/tdarr/logs:/app/logs
+      - ${APP_DATA_DIR}/data/tdarr/transcode-cache:/temp
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media:/media
+    devices:
+      - /dev/dri:/dev/dri
+
+  # --- Extras ----------------------------------------------------------------
+  kapowarr:
+    image: mrcas/kapowarr:v1.1.0
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/kapowarr/config:/app/db
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/comics:/comics-1
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/downloads:/downloads
+
+  wizarr:
+    image: ghcr.io/wizarrrr/wizarr:4.2.0
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/wizarr/database:/data/database
+
+  navidrome:
+    image: deluan/navidrome:0.54.5
+    restart: on-failure
+    environment:
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+      ND_SCANSCHEDULE: 1h
+    volumes:
+      - ${APP_DATA_DIR}/data/navidrome/data:/data
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/music:/music:ro
+
+  kavita:
+    image: jvmilazz0/kavita:0.8.6
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/kavita/config:/kavita/config
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/books:/books
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/comics:/comics
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:2.19.4
+    restart: on-failure
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${APP_DATA_DIR}/data/audiobookshelf/config:/config
+      - ${APP_DATA_DIR}/data/audiobookshelf/metadata:/metadata
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/audiobooks:/audiobooks
+      - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}/media/books:/books:ro

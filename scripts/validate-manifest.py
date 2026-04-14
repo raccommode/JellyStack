@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""Validate every `jellystack-*/umbrel-app.yml` against the required schema.
+"""Validate the single app manifest at `jellystack-app/umbrel-app.yml`.
 
-The Umbrel App Store enforces a set of conventions. We enforce the subset that
-matters for our own store:
+JellyStack is a monolithic Umbrel app — the community store ships exactly one
+app (the JellyStack bundle). We enforce:
 
-  - `id` is a string matching `jellystack-<name>`.
-  - `manifestVersion`, `category`, `name`, `version`, `tagline`, `developer`,
-    `website`, `repo`, `support`, `port`, `submitter` are present.
+  - All required fields are present.
+  - `id` matches `jellystack-app` and the containing directory.
   - `category` is one of the allowed Umbrel categories.
-  - `port` is a positive integer (or 0 for no-UI apps).
-  - `dependencies` is a list (can be empty).
-  - `id` matches the containing directory name.
+  - `port` is a positive integer.
+  - `dependencies` is a list (must be empty — JellyStack has no external app deps).
 """
 from __future__ import annotations
 
@@ -20,6 +18,9 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+MANIFEST = REPO_ROOT / "jellystack-app" / "umbrel-app.yml"
+STORE_MANIFEST = REPO_ROOT / "umbrel-app-store.yml"
+
 ALLOWED_CATEGORIES = {
     "media", "networking", "automation", "developer", "utilities", "finance",
     "social", "productivity", "communication", "server", "ai", "bitcoin", "lightning",
@@ -29,16 +30,26 @@ REQUIRED_FIELDS = [
     "description", "developer", "website", "dependencies", "repo", "support",
     "port", "submitter",
 ]
+EXPECTED_APP_ID = "jellystack-app"
 
 
-def validate_file(path: Path) -> list[str]:
+def validate_store() -> list[str]:
     errors: list[str] = []
-    with path.open() as f:
-        try:
-            data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            return [f"YAML parse error: {e}"]
+    with STORE_MANIFEST.open() as f:
+        data = yaml.safe_load(f)
+    if not isinstance(data, dict):
+        return ["umbrel-app-store.yml: top-level must be a mapping"]
+    if data.get("id") != "jellystack":
+        errors.append(f"umbrel-app-store.yml: `id` must be `jellystack` (got {data.get('id')!r})")
+    if not data.get("name"):
+        errors.append("umbrel-app-store.yml: missing `name`")
+    return errors
 
+
+def validate_app() -> list[str]:
+    errors: list[str] = []
+    with MANIFEST.open() as f:
+        data = yaml.safe_load(f)
     if not isinstance(data, dict):
         return ["top-level must be a mapping"]
 
@@ -47,50 +58,63 @@ def validate_file(path: Path) -> list[str]:
             errors.append(f"missing required field `{field}`")
 
     app_id = data.get("id", "")
-    dir_name = path.parent.name
-    if app_id != dir_name:
-        errors.append(f"`id` ({app_id!r}) does not match directory ({dir_name!r})")
-    if not app_id.startswith("jellystack-"):
-        errors.append(f"`id` must start with `jellystack-` (got {app_id!r})")
+    if app_id != EXPECTED_APP_ID:
+        errors.append(f"`id` must be {EXPECTED_APP_ID!r} (got {app_id!r})")
+    if MANIFEST.parent.name != EXPECTED_APP_ID:
+        errors.append(f"directory name {MANIFEST.parent.name!r} does not match `id`")
 
     category = data.get("category")
     if category and category not in ALLOWED_CATEGORIES:
-        errors.append(f"unknown category {category!r} (allowed: {sorted(ALLOWED_CATEGORIES)})")
+        errors.append(f"unknown category {category!r}")
 
     port = data.get("port")
-    if port is not None and (not isinstance(port, int) or port < 0):
-        errors.append(f"`port` must be a non-negative integer (got {port!r})")
+    if port is not None and (not isinstance(port, int) or port <= 0):
+        errors.append(f"`port` must be a positive integer (got {port!r})")
 
     deps = data.get("dependencies", [])
     if not isinstance(deps, list):
         errors.append("`dependencies` must be a list")
+    elif deps:
+        errors.append(
+            f"`dependencies` must be empty for the monolithic bundle (got {deps!r})"
+        )
 
     return errors
 
 
 def main() -> int:
-    manifests = sorted(REPO_ROOT.glob("jellystack-*/umbrel-app.yml"))
-    if not manifests:
-        print("No jellystack-*/umbrel-app.yml found.", file=sys.stderr)
+    if not STORE_MANIFEST.exists():
+        print(f"Store manifest not found: {STORE_MANIFEST}", file=sys.stderr)
+        return 1
+    if not MANIFEST.exists():
+        print(f"App manifest not found: {MANIFEST}", file=sys.stderr)
         return 1
 
-    total_errors = 0
-    for f in manifests:
-        rel = f.relative_to(REPO_ROOT)
-        errs = validate_file(f)
-        if errs:
-            total_errors += len(errs)
-            print(f"❌ {rel}")
-            for e in errs:
-                print(f"    - {e}")
-        else:
-            print(f"✓ {rel}")
+    store_errs = validate_store()
+    app_errs = validate_app()
+
+    total = 0
+    if store_errs:
+        total += len(store_errs)
+        print(f"❌ {STORE_MANIFEST.relative_to(REPO_ROOT)}")
+        for e in store_errs:
+            print(f"    - {e}")
+    else:
+        print(f"✓ {STORE_MANIFEST.relative_to(REPO_ROOT)}")
+
+    if app_errs:
+        total += len(app_errs)
+        print(f"❌ {MANIFEST.relative_to(REPO_ROOT)}")
+        for e in app_errs:
+            print(f"    - {e}")
+    else:
+        print(f"✓ {MANIFEST.relative_to(REPO_ROOT)}")
 
     print()
-    if total_errors:
-        print(f"{total_errors} error(s) across {len(manifests)} manifests.", file=sys.stderr)
+    if total:
+        print(f"{total} error(s).", file=sys.stderr)
         return 1
-    print(f"All {len(manifests)} app manifests valid.")
+    print("Manifests OK.")
     return 0
 
 
