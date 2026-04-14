@@ -23,7 +23,11 @@ services:
 
   # --- The JellyStack web panel (Next.js) ------------------------------------
   panel:
-    image: ghcr.io/raccommode/jellystack-panel:0.1.0
+    # Published by .github/workflows/publish-panel.yml on every tag + on
+    # pushes to main (as `:latest` + `:main`). Pinned to a release tag for
+    # reproducibility; bump alongside jellystack-app/package.json and
+    # umbrel-app.yml `version:`.
+    image: ghcr.io/raccommode/jellystack-panel:2026.16.1
     restart: on-failure
     stop_grace_period: 30s
     environment:
@@ -90,7 +94,10 @@ services:
       - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
 
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    # Readarr upstream is in maintenance mode; LinuxServer.io ships only
+    # nightly builds. We pin a specific nightly that has a linux/amd64 +
+    # arm64 manifest (the plain `develop` tag is currently manifest-empty).
+    image: lscr.io/linuxserver/readarr:nightly-0.1.0.978-ls12
     restart: on-failure
     environment:
       <<: *common-env
@@ -147,7 +154,7 @@ services:
       - ${JELLYSTACK_ROOT:-${UMBREL_ROOT}/JellyStack}:/data
 
   jdownloader:
-    image: jlesage/jdownloader-2:v25.10.1
+    image: jlesage/jdownloader-2:v26.03.1
     restart: on-failure
     environment:
       USER_ID: ${PUID:-1000}
@@ -269,7 +276,9 @@ services:
       - ${APP_DATA_DIR}/data/autobrr/config:/config
 
   janitorr:
-    image: ghcr.io/schaka/janitorr-jvm-stable:latest
+    # Correct image: ghcr.io/schaka/janitorr (JVM build is the default,
+    # versioned tags are v<X.Y.Z>).
+    image: ghcr.io/schaka/janitorr:v1.4.5
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data/janitorr/logs:/logs

@@ -1,0 +1,77 @@
+name: Publish panel image
+
+# Builds the JellyStack panel Docker image and pushes it to
+# ghcr.io/raccommode/jellystack-panel. Runs on:
+#   - Every push to main (tags the image as :main and :latest)
+#   - Every tag starting with a JellyStack version (tags as :<version>)
+#   - Manual workflow_dispatch (useful for re-publishing)
+
+on:
+  push:
+    branches: [main]
+    tags: ["[0-9]*.[0-9]*.[0-9]*"]    # e.g. 2026.16.1
+    paths:
+      - "jellystack-app/**"
+      - ".github/workflows/publish-panel.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read panel version
+        id: version
+        run: |
+          version=$(jq -r .version jellystack-app/package.json)
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+          echo "JellyStack panel version: $version"
+
+      - name: Set up QEMU (for multi-arch builds)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker tags
+        id: tags
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/jellystack-panel
+          tags: |
+            type=raw,value=${{ steps.version.outputs.value }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=tag
+          labels: |
+            org.opencontainers.image.title=JellyStack Panel
+            org.opencontainers.image.description=Unified dashboard and auto-configurator for the JellyStack Umbrel app.
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: jellystack-app
+          file: jellystack-app/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: ${{ steps.tags.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
