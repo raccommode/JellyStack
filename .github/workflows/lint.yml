@@ -1,0 +1,63 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  yaml:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install yamllint
+        run: pip install --user yamllint
+      - name: Lint manifests
+        run: |
+          yamllint \
+            -d '{extends: default, rules: {line-length: disable, document-start: disable, comments: {min-spaces-from-content: 1}, truthy: {check-keys: false}}}' \
+            umbrel-app-store.yml \
+            $(find . -name 'umbrel-app.yml' -not -path '*/node_modules/*')
+
+  compose:
+    name: docker-compose config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate every docker-compose.yml
+        run: |
+          set -e
+          export UMBREL_ROOT=/tmp/umbrel
+          export APP_DATA_DIR=/tmp/app-data
+          export JELLYSTACK_ROOT=/tmp/JellyStack
+          mkdir -p "$UMBREL_ROOT/app-data" "$APP_DATA_DIR/data/config" "$JELLYSTACK_ROOT"
+          for f in $(find . -name 'docker-compose.yml' -not -path '*/node_modules/*'); do
+            echo "::group::$f"
+            docker compose -f "$f" config --quiet
+            echo "::endgroup::"
+          done
+
+  panel:
+    name: Panel (TypeScript + i18n)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: jellystack-panel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+      - name: i18n key check
+        run: pnpm i18n:check
+      - name: TypeScript
+        run: pnpm typecheck
+      - name: ESLint
+        run: pnpm lint
