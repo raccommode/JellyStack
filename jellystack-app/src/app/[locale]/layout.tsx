@@ -4,6 +4,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { isLocale, locales } from "@/i18n/config";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Sidebar } from "@/components/sidebar";
 import "./globals.css";
 
 export function generateStaticParams() {
@@ -35,24 +36,20 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   const messages = await getMessages();
-  const t = await getTranslations({ locale, namespace: "common" });
 
   return (
     <html lang={locale}>
-      <body className="min-h-screen bg-neutral-950 text-neutral-100 antialiased">
+      <body className="h-screen overflow-hidden bg-neutral-950 text-neutral-100 antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur">
-            <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-sm font-bold">
-                  J
-                </div>
-                <span className="text-lg font-semibold tracking-tight">{t("appName")}</span>
-              </div>
-              <LanguageSwitcher />
+          <div className="flex h-screen">
+            <Sidebar />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <header className="flex items-center justify-end border-b border-neutral-800 bg-neutral-900/50 px-6 py-3 backdrop-blur">
+                <LanguageSwitcher />
+              </header>
+              <main className="min-h-0 flex-1 overflow-auto">{children}</main>
             </div>
-          </header>
-          <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

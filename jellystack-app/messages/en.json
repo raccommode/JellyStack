@@ -21,6 +21,15 @@
     "settings": "Settings",
     "logs": "Logs"
   },
+  "categories": {
+    "media": "Media",
+    "requests": "Requests",
+    "download": "Download",
+    "monitoring": "Monitoring",
+    "automation": "Automation",
+    "transcoding": "Transcoding",
+    "extras": "Extras"
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "All your media apps, at a glance.",
@@ -31,6 +40,13 @@
       "title": "No JellyStack apps installed yet",
       "description": "Head over to your Umbrel App Store to install the JellyStack apps you want to use.",
       "cta": "Open App Store"
+    }
+  },
+  "apps": {
+    "viewer": {
+      "openInNewTab": "Open in new tab",
+      "loading": "Loading app…",
+      "error": "Could not load this app. It may be starting up."
     }
   },
   "wizard": {
@@ -77,9 +93,27 @@
   },
   "settings": {
     "title": "Settings",
+    "subtitle": "Everything JellyStack needs to know about your setup. No terminal required.",
+    "placeholder": "Detailed settings screens are on their way. For now, these are the sections JellyStack will grow into.",
+    "vpn": {
+      "label": "VPN (Gluetun)",
+      "hint": "Mullvad WireGuard credentials, kill-switch, provider choice."
+    },
+    "paths": {
+      "label": "Media paths",
+      "hint": "Where movies, TV, music, books and audiobooks live on disk."
+    },
+    "users": {
+      "label": "Users",
+      "hint": "Invite friends and family to Jellyfin through Wizarr."
+    },
     "language": {
       "label": "Language",
       "hint": "Changes the panel language. Apps remain in their own language."
+    },
+    "schedule": {
+      "label": "Schedules",
+      "hint": "Library scans, backups, Tdarr runs."
     }
   },
   "languageSwitcher": {

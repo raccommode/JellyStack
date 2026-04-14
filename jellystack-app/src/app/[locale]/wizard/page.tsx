@@ -30,7 +30,7 @@ export default function WizardPage() {
   const goBack = () => setCurrent(STEPS[Math.max(index - 1, 0)]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8 px-6 py-8">
       <header className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
           <Wand2 className="h-5 w-5" />

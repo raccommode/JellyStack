@@ -21,6 +21,15 @@
     "settings": "Paramètres",
     "logs": "Journaux"
   },
+  "categories": {
+    "media": "Média",
+    "requests": "Demandes",
+    "download": "Téléchargement",
+    "monitoring": "Monitoring",
+    "automation": "Automatisation",
+    "transcoding": "Transcodage",
+    "extras": "Extras"
+  },
   "dashboard": {
     "title": "Tableau de bord",
     "subtitle": "Toutes tes applis média, en un coup d'œil.",
@@ -31,6 +40,13 @@
       "title": "Aucune application JellyStack installée",
       "description": "Rends-toi dans l'App Store Umbrel pour installer les applications JellyStack que tu veux utiliser.",
       "cta": "Ouvrir l'App Store"
+    }
+  },
+  "apps": {
+    "viewer": {
+      "openInNewTab": "Ouvrir dans un nouvel onglet",
+      "loading": "Chargement de l'application…",
+      "error": "Impossible de charger cette application. Elle est peut-être en cours de démarrage."
     }
   },
   "wizard": {
@@ -77,9 +93,27 @@
   },
   "settings": {
     "title": "Paramètres",
+    "subtitle": "Tout ce que JellyStack doit savoir sur ton setup. Aucun terminal requis.",
+    "placeholder": "Les écrans de réglages détaillés arrivent bientôt. Pour l'instant, voici les sections que JellyStack va faire grandir.",
+    "vpn": {
+      "label": "VPN (Gluetun)",
+      "hint": "Identifiants Mullvad WireGuard, kill-switch, choix du fournisseur."
+    },
+    "paths": {
+      "label": "Chemins média",
+      "hint": "Où vivent les films, séries, musique, livres et audiobooks sur le disque."
+    },
+    "users": {
+      "label": "Utilisateurs",
+      "hint": "Invite tes proches sur Jellyfin via Wizarr."
+    },
     "language": {
       "label": "Langue",
       "hint": "Change la langue du panel. Les applis gardent leur propre langue."
+    },
+    "schedule": {
+      "label": "Planifications",
+      "hint": "Scans de bibliothèque, sauvegardes, runs Tdarr."
     }
   },
   "languageSwitcher": {
