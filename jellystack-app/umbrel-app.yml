@@ -2,7 +2,7 @@ manifestVersion: 1.1
 id: jellystack-app
 category: media
 name: JellyStack
-version: "2026.16.2"
+version: "2026.16.3"
 tagline: The complete Jellyfin media stack — one install, one dashboard, zero config.
 description: >-
   JellyStack bundles Jellyfin, the *arr suite (Sonarr, Radarr, Lidarr, Readarr, Bazarr,

@@ -16,6 +16,17 @@ Example: `2026.16.1` is the first release of week 16, 2026. The next release
 in the same week would be `2026.16.2`; the first release of the following
 week would be `2026.17.1`.
 
+## [2026.16.3] — 2026-04-14
+
+### Fixed
+
+- Removed Jellyfin's `ports: 7359/udp, 1900/udp` host bindings. They're
+  used for LAN auto-discovery of Jellyfin clients but conflict with
+  avahi/mDNS and other media servers on umbrelOS — the install failed
+  three retries with "Bind for 0.0.0.0:7359 failed: port is already
+  allocated". Jellyfin is still fully reachable through the JellyStack
+  panel (reverse proxy) and via `http://<umbrel-host>:8096` directly.
+
 ## [2026.16.2] — 2026-04-14
 
 ### Fixed
@@ -63,3 +74,4 @@ missing `public/` directory above. That version is retired.
 
 [2026.16.1]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.1
 [2026.16.2]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.2
+[2026.16.3]: https://github.com/raccommode/JellyStack/releases/tag/2026.16.3
